@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "pet_id": 4,
+    "pet_name": "Luna",
+    "adopter_name": "John Smith",
+    "adopter_email": "john.smith@email.com",
+    "adopter_phone": "087-123-4567",
+    "status": "Completed",
+    "application_date": "2025-10-15",
+    "adoption_date": "2025-10-22"
+  },
+  {
+    "id": 2,
+    "pet_id": 7,
+    "pet_name": "Charlie",
+    "adopter_name": "Sarah O'Brien",
+    "adopter_email": "sarah.obrien@email.com",
+    "adopter_phone": "086-234-5678",
+    "status": "Pending",
+    "application_date": "2025-11-10",
+    "adoption_date": null
+  },
+  {
+    "id": 3,
+    "pet_id": 13,
+    "pet_name": "Duke",
+    "adopter_name": "Michael Murphy",
+    "adopter_email": "m.murphy@email.com",
+    "adopter_phone": "085-345-6789",
+    "status": "Completed",
+    "application_date": "2025-09-20",
+    "adoption_date": "2025-09-28"
+  },
+  {
+    "id": 4,
+    "pet_id": 15,
+    "pet_name": "Zeus",
+    "adopter_name": "Emma Walsh",
+    "adopter_email": "emma.walsh@email.com",
+    "adopter_phone": "083-456-7890",
+    "status": "Pending",
+    "application_date": "2025-11-12",
+    "adoption_date": null
+  },
+  {
+    "id": 5,
+    "pet_id": 1,
+    "pet_name": "Buddy",
+    "adopter_name": "David Kelly",
+    "adopter_email": "d.kelly@email.com",
+    "adopter_phone": "089-567-8901",
+    "status": "In Review",
+    "application_date": "2025-11-15",
+    "adoption_date": null
+  }
+]

@@ -133,7 +133,90 @@ This backend provides sample data for the Pet Adoption Platform frontend. It inc
   "adoption_date": "YYYY-MM-DD or null"
 }
 ```
+## Cloud Architecture
+```mermaid
+flowchart LR
 
+  %% CLIENT
+  subgraph Client
+    U[Users: adopters, shelters, admins]
+  end
+
+  %% FRONTEND + CDN
+  U -->|HTTPS| CF[Amazon CloudFront]
+
+  subgraph Frontend
+    CF --> S3WEB[S3 - Static Website (React App)]
+    GH[GitHub Repo]
+    AMP[AWS Amplify - CI/CD + Hosting]
+    GH --> AMP --> S3WEB
+  end
+
+  %% SECURITY EDGE
+  CF --> WAF[AWS WAF - Web Application Firewall]
+  WAF --> APIGW[Amazon API Gateway - REST APIs]
+
+  %% AUTH
+  subgraph Identity
+    COG[AWS Cognito - User Pools & RBAC]
+  end
+  U --> COG
+  APIGW --> COG
+
+  %% BACKEND / BUSINESS LOGIC
+  subgraph Backend (Serverless)
+    APIGW --> L_PETS[Lambda - Pet & Shelter Service]
+    APIGW --> L_APPS[Lambda - Adoption Applications]
+    APIGW --> L_NOTIF[Lambda - Notifications]
+    APIGW --> L_PAY[Lambda - Payments (Stripe)]
+    L_APPS --> STEP[AWS Step Functions - Adoption Workflow]
+  end
+
+  %% DATA + STORAGE
+  subgraph Data & Storage
+    RDS[(Amazon RDS - PostgreSQL\nUsers, pets, adoptions)]
+    DDB[(DynamoDB - Workflow metadata)]
+    S3DATA[(S3 - Pet Images, IDs, Vaccination Docs)]
+  end
+  L_PETS --> RDS
+  L_APPS --> RDS
+  L_APPS --> DDB
+  L_PETS --> S3DATA
+  L_APPS --> S3DATA
+
+  %% INTEGRATION / EVENTS
+  subgraph Integration & Notifications
+    EVB[Amazon EventBridge - Events]
+    SNS[Amazon SNS / SES - Email & SMS]
+    Stripe[Stripe API - Payments]
+  end
+  STEP --> EVB --> L_NOTIF --> SNS
+  L_PAY --> Stripe
+
+  %% OBSERVABILITY & GOVERNANCE
+  subgraph Operations & Security Logging
+    CW[Amazon CloudWatch - Logs & Metrics]
+    CT[CloudTrail - Audit Logs]
+    KMS[AWS KMS - Encryption Keys]
+    IAM[IAM Roles & Policies]
+  end
+
+  L_PETS --> CW
+  L_APPS --> CW
+  L_NOTIF --> CW
+  L_PAY --> CW
+  APIGW --> CW
+  RDS --> CW
+  EVB --> CW
+  SNS --> CW
+  AMP --> CW
+
+  APIGW --> CT
+  COG --> CT
+  RDS --> CT
+  S3DATA --> CT
+  S3WEB --> CT
+```
 ## How the Frontend Uses This
 
 The frontend (Person 4) can:

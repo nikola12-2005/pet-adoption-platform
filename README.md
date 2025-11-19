@@ -142,41 +142,41 @@ flowchart LR
     U[Users: adopters, shelters, admins]
   end
 
-  %% FRONTEND + CDN
-  U -->|HTTPS| CF[Amazon CloudFront]
+  %% FRONTEND & CDN
+  U -->|HTTPS| CF[CloudFront CDN]
 
   subgraph Frontend
-    CF --> S3WEB[S3 - Static Website (React App)]
+    CF --> S3WEB[S3 Static Site]
     GH[GitHub Repo]
-    AMP[AWS Amplify - CI/CD + Hosting]
+    AMP[AWS Amplify - CI/CD]
     GH --> AMP --> S3WEB
   end
 
   %% SECURITY EDGE
-  CF --> WAF[AWS WAF - Web Application Firewall]
-  WAF --> APIGW[Amazon API Gateway - REST APIs]
+  CF --> WAF[AWS WAF]
+  WAF --> APIGW[API Gateway]
 
   %% AUTH
   subgraph Identity
-    COG[AWS Cognito - User Pools & RBAC]
+    COG[Cognito - Auth & RBAC]
   end
   U --> COG
   APIGW --> COG
 
-  %% BACKEND / BUSINESS LOGIC
-  subgraph Backend (Serverless)
-    APIGW --> L_PETS[Lambda - Pet & Shelter Service]
-    APIGW --> L_APPS[Lambda - Adoption Applications]
-    APIGW --> L_NOTIF[Lambda - Notifications]
-    APIGW --> L_PAY[Lambda - Payments (Stripe)]
-    L_APPS --> STEP[AWS Step Functions - Adoption Workflow]
+  %% BACKEND
+  subgraph Backend
+    APIGW --> L_PETS[Lambda: Pet Service]
+    APIGW --> L_APPS[Lambda: Application Service]
+    APIGW --> L_NOTIF[Lambda: Notifications]
+    APIGW --> L_PAY[Lambda: Payments]
+    L_APPS --> STEP[Step Functions: Workflow]
   end
 
-  %% DATA + STORAGE
-  subgraph Data & Storage
-    RDS[(Amazon RDS - PostgreSQL\nUsers, pets, adoptions)]
-    DDB[(DynamoDB - Workflow metadata)]
-    S3DATA[(S3 - Pet Images, IDs, Vaccination Docs)]
+  %% DATA
+  subgraph Data
+    RDS[(RDS PostgreSQL)]
+    DDB[(DynamoDB)]
+    S3DATA[(S3 Pet Images & Documents)]
   end
   L_PETS --> RDS
   L_APPS --> RDS
@@ -184,39 +184,22 @@ flowchart LR
   L_PETS --> S3DATA
   L_APPS --> S3DATA
 
-  %% INTEGRATION / EVENTS
-  subgraph Integration & Notifications
-    EVB[Amazon EventBridge - Events]
-    SNS[Amazon SNS / SES - Email & SMS]
-    Stripe[Stripe API - Payments]
+  %% EVENTS
+  subgraph Integrations
+    EVB[EventBridge]
+    SNS[AWS SNS / SES]
+    STRIPE[Stripe API]
   end
   STEP --> EVB --> L_NOTIF --> SNS
-  L_PAY --> Stripe
+  L_PAY --> STRIPE
 
-  %% OBSERVABILITY & GOVERNANCE
-  subgraph Operations & Security Logging
-    CW[Amazon CloudWatch - Logs & Metrics]
-    CT[CloudTrail - Audit Logs]
-    KMS[AWS KMS - Encryption Keys]
-    IAM[IAM Roles & Policies]
-  end
+  %% LOGGING & SECURITY
+  subgraph Operations
+    CW[CloudWatch]
+    CT[CloudTrail]
+    KMS[KMS Keys]
+    IAM[IAM Roles]
 
-  L_PETS --> CW
-  L_APPS --> CW
-  L_NOTIF --> CW
-  L_PAY --> CW
-  APIGW --> CW
-  RDS --> CW
-  EVB --> CW
-  SNS --> CW
-  AMP --> CW
-
-  APIGW --> CT
-  COG --> CT
-  RDS --> CT
-  S3DATA --> CT
-  S3WEB --> CT
-```
 ## How the Frontend Uses This
 
 The frontend (Person 4) can:

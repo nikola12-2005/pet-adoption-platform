@@ -199,6 +199,23 @@ flowchart LR
     CT[CloudTrail]
     KMS[KMS Keys]
     IAM[IAM Roles]
+  end
+
+  L_PETS --> CW
+  L_APPS --> CW
+  L_NOTIF --> CW
+  L_PAY --> CW
+  APIGW --> CW
+  RDS --> CW
+  EVB --> CW
+  SNS --> CW
+
+  APIGW --> CT
+  COG --> CT
+  RDS --> CT
+  S3DATA --> CT
+  S3WEB --> CT
+```
 
 ## How the Frontend Uses This
 
